@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Movie Details — MovieSphere{% endblock %}
+{% block page_id %}explore{% endblock %}
+
+{% block head_extra %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" defer></script>
+{% endblock %}
+
+{% block content %}
+
+<section class="container movie-page" id="moviePage" data-movie-id="{{ movie_id }}">
+
+  <!-- ===== HERO ===== -->
+  <div class="movie-hero">
+    <div class="movie-hero__poster" id="moviePoster">
+      <div class="skeleton" style="width:100%;aspect-ratio:2/3;border-radius:var(--r-lg)"></div>
+    </div>
+
+    <div class="movie-hero__info">
+      <div class="skeleton skeleton--row" style="height:38px;width:60%;margin-bottom:var(--s-4)"></div>
+      <div class="skeleton skeleton--row" style="height:20px;width:40%;margin-bottom:var(--s-6)"></div>
+      <div class="skeleton skeleton--row" style="height:120px"></div>
+    </div>
+  </div>
+
+</section>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/movie.js') }}"></script>
+{% endblock %}

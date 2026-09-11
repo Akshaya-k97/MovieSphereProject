@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+{% block title %}Explore Movies — MovieSphere{% endblock %}
+{% block page_id %}explore{% endblock %}
+
+{% block content %}
+
+<section class="page-head container">
+  <h1 class="page-head__title">Explore Movies</h1>
+  <p class="page-head__subtitle">
+    Search, filter and discover movies from our large-scale movie dataset.
+  </p>
+</section>
+
+<section class="container explore">
+
+  <!-- Search -->
+  <div class="search-bar">
+    <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+    <input type="search" id="exploreSearch" class="search-bar__input"
+           placeholder="Search movies…" aria-label="Search movies" autocomplete="off">
+    <button class="icon-btn search-bar__clear" id="searchClear" type="button"
+            aria-label="Clear search" hidden>
+      <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+    </button>
+  </div>
+
+  <!-- Filters -->
+  <div class="filter-bar" role="group" aria-label="Movie filters">
+
+    <div class="filter-group">
+      <label for="filterGenre" class="filter-label">Genre</label>
+      <select id="filterGenre" class="filter-select">
+        <option value="">All Genres</option>
+        <option>Action</option>
+        <option>Adventure</option>
+        <option>Animation</option>
+        <option>Comedy</option>
+        <option>Crime</option>
+        <option>Drama</option>
+        <option>Horror</option>
+        <option>Romance</option>
+        <option>Sci-Fi</option>
+        <option>Thriller</option>
+        <option>Western</option>
+        <option>Music</option>
+        <option>Mystery</option>
+      </select>
+    </div>
+
+    <div class="filter-group">
+      <label for="filterRating" class="filter-label">Rating</label>
+      <select id="filterRating" class="filter-select">
+        <option value="0">Any Rating</option>
+        <option value="4.5">4.5+</option>
+        <option value="4">4.0+</option>
+        <option value="3.5">3.5+</option>
+        <option value="3">3.0+</option>
+      </select>
+    </div>
+
+    <div class="filter-group">
+      <label for="filterYear" class="filter-label">Year</label>
+      <select id="filterYear" class="filter-select">
+        <option value="">Any Year</option>
+        <option value="2020">2020s</option>
+        <option value="2010">2010s</option>
+        <option value="2000">2000s</option>
+        <option value="1990">1990s</option>
+        <option value="1980">1980s</option>
+        <option value="0">Older</option>
+      </select>
+    </div>
+
+    <div class="filter-group">
+      <label for="sortBy" class="filter-label">Sort By</label>
+      <select id="sortBy" class="filter-select">
+        <option value="rating">Highest Rated</option>
+        <option value="popular">Most Popular</option>
+        <option value="newest">Newest</option>
+        <option value="oldest">Oldest</option>
+        <option value="alpha">Alphabetical</option>
+      </select>
+    </div>
+
+    <button class="btn btn--subtle filter-reset" id="filterReset" type="button">
+      <i class="fa-solid fa-rotate-left" aria-hidden="true"></i> Reset
+    </button>
+
+  </div>
+
+  <!-- Results meta -->
+  <div class="results-meta" id="resultsMeta" aria-live="polite">
+    <span>Loading…</span>
+  </div>
+
+  <!-- Grid -->
+  <div class="movie-grid" id="exploreGrid">
+    <!-- Skeletons -->
+    <div class="skeleton skeleton--card"></div>
+    <div class="skeleton skeleton--card"></div>
+    <div class="skeleton skeleton--card"></div>
+    <div class="skeleton skeleton--card"></div>
+    <div class="skeleton skeleton--card"></div>
+    <div class="skeleton skeleton--card"></div>
+    <div class="skeleton skeleton--card"></div>
+    <div class="skeleton skeleton--card"></div>
+  </div>
+
+  <!-- Load more -->
+  <div class="load-more-wrap" id="loadMoreWrap" hidden>
+    <button class="btn btn--ghost" id="loadMoreBtn" type="button">
+      <i class="fa-solid fa-arrow-down" aria-hidden="true"></i> Load More
+    </button>
+  </div>
+
+</section>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/explore.js') }}"></script>
+{% endblock %}

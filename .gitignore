@@ -1,0 +1,10 @@
+# Python temporary files
+__pycache__/
+*.pyc
+
+# Environment files (if you ever add passwords or keys later)
+.env
+
+# Virtual environments (if you use them)
+venv/
+.venv/

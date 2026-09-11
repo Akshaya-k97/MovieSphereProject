@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% block title %}Your Movie Profile — MovieSphere{% endblock %}
+{% block page_id %}user{% endblock %}
+
+{% block content %}
+
+<section class="container profile">
+
+  <!-- ============= PROFILE HEADER ============= -->
+  <div class="profile-head">
+    <div class="profile-head__identity">
+      <div class="profile-head__avatar" id="profileAvatar" aria-hidden="true">U1</div>
+      <div class="profile-head__text">
+        <span class="page-head__eyebrow">
+          <i class="fa-solid fa-user-astronaut" aria-hidden="true"></i>
+          Personal Analytics
+        </span>
+        <h1 class="page-head__title" style="margin-top:6px">Your Movie Profile</h1>
+        <p class="page-head__subtitle">
+          Rating behaviour and genre preferences for the selected user, derived from the interaction dataset.
+        </p>
+      </div>
+    </div>
+
+    <div class="profile-head__picker">
+      <label for="userSelect" class="filter-label">Viewing profile</label>
+      <div class="user-picker">
+        <i class="fa-solid fa-user" aria-hidden="true"></i>
+        <select id="userSelect" class="user-picker__select" aria-label="Select user profile">
+          <!-- Populated by user.js -->
+        </select>
+        <i class="fa-solid fa-chevron-down user-picker__caret" aria-hidden="true"></i>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============= STAT CARDS ============= -->
+  <div class="profile-stats" id="profileStats">
+    <div class="skeleton skeleton--kpi"></div>
+    <div class="skeleton skeleton--kpi"></div>
+    <div class="skeleton skeleton--kpi"></div>
+    <div class="skeleton skeleton--kpi"></div>
+  </div>
+
+  <!-- ============= CHARTS ============= -->
+  <div class="profile-charts">
+
+    <article class="chart-card">
+      <div class="chart-card__head">
+        <h2 class="chart-card__title">Favorite Genres</h2>
+        <p class="chart-card__sub">How this user's rated movies are distributed by genre.</p>
+      </div>
+      <div class="chart-card__body"><canvas id="chartFavGenres"></canvas></div>
+    </article>
+
+    <article class="chart-card">
+      <div class="chart-card__head">
+        <h2 class="chart-card__title">Rating Behaviour</h2>
+        <p class="chart-card__sub">How this user distributes their star ratings.</p>
+      </div>
+      <div class="chart-card__body"><canvas id="chartRatingBehaviour"></canvas></div>
+    </article>
+
+  </div>
+
+  <!-- ============= PERSONALIZED RECOMMENDATIONS ============= -->
+  <section class="profile-recs">
+    <div class="section__head">
+      <div>
+        <h2 class="section__title">Your Personalized Recommendations</h2>
+        <p class="section__subtitle" id="recSubtitle">
+          Based on this user's top genres and rating history.
+        </p>
+      </div>
+      <a href="/recommendations" class="link-more">
+        Full recommender <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+      </a>
+    </div>
+
+    <div class="movie-grid" id="userRecGrid">
+      <div class="skeleton skeleton--card"></div>
+      <div class="skeleton skeleton--card"></div>
+      <div class="skeleton skeleton--card"></div>
+      <div class="skeleton skeleton--card"></div>
+      <div class="skeleton skeleton--card"></div>
+      <div class="skeleton skeleton--card"></div>
+    </div>
+  </section>
+
+</section>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="{{ url_for('static', filename='js/user.js') }}"></script>
+{% endblock %}

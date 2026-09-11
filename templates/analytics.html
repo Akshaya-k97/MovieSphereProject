@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+{% block title %}Analytics — MovieSphere{% endblock %}
+{% block page_id %}analytics{% endblock %}
+
+{% block content %}
+
+<section class="page-head container">
+  <span class="page-head__eyebrow">
+    <i class="fa-solid fa-chart-line" aria-hidden="true"></i>
+    Big Data Analytics
+  </span>
+  <h1 class="page-head__title">Movie Data Analytics</h1>
+  <p class="page-head__subtitle">
+    Explore patterns and insights extracted from large-scale movie and user interaction data.
+  </p>
+</section>
+
+<section class="container analytics">
+
+  <!-- ============= FILTER TOOLBAR ============= -->
+  <div class="analytics-filters" id="analyticsFilters" role="group" aria-label="Analytics filters">
+
+    <button class="filter-pill is-active" data-filter="all" type="button">
+      <i class="fa-solid fa-layer-group" aria-hidden="true"></i> All Data
+    </button>
+
+    <div class="filter-pill-group">
+      <button class="filter-pill" data-filter="genre" type="button"
+              aria-haspopup="listbox" aria-expanded="false">
+        <i class="fa-solid fa-tags" aria-hidden="true"></i>
+        <span class="filter-pill__value">Genre</span>
+        <i class="fa-solid fa-chevron-down filter-pill__caret" aria-hidden="true"></i>
+      </button>
+      <div class="filter-menu" data-menu="genre" role="listbox" hidden></div>
+    </div>
+
+    <div class="filter-pill-group">
+      <button class="filter-pill" data-filter="year" type="button"
+              aria-haspopup="listbox" aria-expanded="false">
+        <i class="fa-regular fa-calendar" aria-hidden="true"></i>
+        <span class="filter-pill__value">Year</span>
+        <i class="fa-solid fa-chevron-down filter-pill__caret" aria-hidden="true"></i>
+      </button>
+      <div class="filter-menu" data-menu="year" role="listbox" hidden></div>
+    </div>
+
+    <div class="filter-pill-group">
+      <button class="filter-pill" data-filter="rating" type="button"
+              aria-haspopup="listbox" aria-expanded="false">
+        <i class="fa-solid fa-star" aria-hidden="true"></i>
+        <span class="filter-pill__value">Rating</span>
+        <i class="fa-solid fa-chevron-down filter-pill__caret" aria-hidden="true"></i>
+      </button>
+      <div class="filter-menu" data-menu="rating" role="listbox" hidden></div>
+    </div>
+
+  </div>
+
+  <!-- ============= KPI CARDS ============= -->
+  <div class="kpi-grid analytics__kpis" id="analyticsKpis">
+    <div class="skeleton skeleton--kpi"></div>
+    <div class="skeleton skeleton--kpi"></div>
+    <div class="skeleton skeleton--kpi"></div>
+    <div class="skeleton skeleton--kpi"></div>
+    <div class="skeleton skeleton--kpi"></div>
+  </div>
+
+  <!-- ============= CHARTS ============= -->
+  <div class="analytics__grid">
+
+    <article class="chart-card">
+      <div class="chart-card__head">
+        <h2 class="chart-card__title">Rating Distribution</h2>
+        <p class="chart-card__sub">Number of ratings per star bucket.</p>
+      </div>
+      <div class="chart-card__body"><canvas id="chartDistribution"></canvas></div>
+    </article>
+
+    <article class="chart-card">
+      <div class="chart-card__head">
+        <h2 class="chart-card__title">Popular Genres</h2>
+        <p class="chart-card__sub">Share of titles per genre.</p>
+      </div>
+      <div class="chart-card__body"><canvas id="chartDonut"></canvas></div>
+    </article>
+
+    <article class="chart-card chart-card--wide">
+      <div class="chart-card__head">
+        <h2 class="chart-card__title">Movies by Genre</h2>
+        <p class="chart-card__sub">Number of titles per genre in the current scope.</p>
+      </div>
+      <div class="chart-card__body"><canvas id="chartByGenre"></canvas></div>
+    </article>
+
+    <article class="chart-card">
+      <div class="chart-card__head">
+        <h2 class="chart-card__title">Average Rating by Genre</h2>
+        <p class="chart-card__sub">Mean user score per genre.</p>
+      </div>
+      <div class="chart-card__body"><canvas id="chartAvgGenre"></canvas></div>
+    </article>
+
+    <article class="chart-card">
+      <div class="chart-card__head">
+        <h2 class="chart-card__title">Most Rated Movies</h2>
+        <p class="chart-card__sub">Top titles by interaction volume.</p>
+      </div>
+      <div class="chart-card__body"><canvas id="chartMostRated"></canvas></div>
+    </article>
+
+    <article class="chart-card chart-card--wide">
+      <div class="chart-card__head">
+        <h2 class="chart-card__title">Rating Activity</h2>
+        <p class="chart-card__sub">Interaction volume over time (sample timestamps).</p>
+      </div>
+      <div class="chart-card__body"><canvas id="chartActivity"></canvas></div>
+    </article>
+
+  </div>
+
+  <!-- ============= KEY INSIGHTS ============= -->
+  <section class="key-insights">
+    <div class="section__head">
+      <div>
+        <h2 class="section__title">Key Insights</h2>
+        <p class="section__subtitle">Auto-generated observations from the current filter scope.</p>
+      </div>
+    </div>
+    <div class="insight-list" id="insightList">
+      <div class="skeleton skeleton--row" style="height:72px"></div>
+      <div class="skeleton skeleton--row" style="height:72px"></div>
+      <div class="skeleton skeleton--row" style="height:72px"></div>
+    </div>
+  </section>
+
+</section>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="{{ url_for('static', filename='js/analytics.js') }}"></script>
+{% endblock %}

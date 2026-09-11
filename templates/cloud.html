@@ -1,0 +1,240 @@
+{% extends "base.html" %}
+{% block title %}Cloud Infrastructure — MovieSphere{% endblock %}
+{% block page_id %}cloud{% endblock %}
+
+{% block content %}
+
+<section class="page-head container">
+  <span class="page-head__eyebrow">
+    <i class="fa-solid fa-cloud" aria-hidden="true"></i>
+    Cloud Computing
+  </span>
+  <h1 class="page-head__title">Cloud Infrastructure</h1>
+  <p class="page-head__subtitle">
+    Cloud-enabled storage and application architecture for the MovieSphere pipeline.
+  </p>
+</section>
+
+<section class="container cloud">
+
+  <!-- ============= STATUS CARDS ============= -->
+  <div class="cloud-cards" id="cloudCards">
+
+    <!-- Storage card -->
+    <article class="cloud-card" id="storageCard">
+      <div class="cloud-card__head">
+        <div class="cloud-card__icon cloud-card__icon--aws">
+          <i class="fa-brands fa-aws" aria-hidden="true"></i>
+        </div>
+        <div class="cloud-card__head-text">
+          <h2 class="cloud-card__title">Cloud Storage</h2>
+          <p class="cloud-card__sub">Amazon S3</p>
+        </div>
+        <span class="status-pill" id="storageStatus" data-state="checking">
+          <span class="status-pill__dot"></span>
+          <span class="status-pill__label">Checking…</span>
+        </span>
+      </div>
+
+      <div class="cloud-card__body">
+        <div class="storage-list">
+          <div class="storage-row">
+            <div class="storage-row__icon"><i class="fa-solid fa-database" aria-hidden="true"></i></div>
+            <div class="storage-row__text">
+              <span class="storage-row__label">Dataset Storage</span>
+              <span class="storage-row__meta">movielens/*.csv</span>
+            </div>
+          </div>
+          <div class="storage-row">
+            <div class="storage-row__icon"><i class="fa-solid fa-gears" aria-hidden="true"></i></div>
+            <div class="storage-row__text">
+              <span class="storage-row__label">Processed Data</span>
+              <span class="storage-row__meta">processed/parquet/</span>
+            </div>
+          </div>
+          <div class="storage-row">
+            <div class="storage-row__icon"><i class="fa-solid fa-wand-magic-sparkles" aria-hidden="true"></i></div>
+            <div class="storage-row__text">
+              <span class="storage-row__label">Recommendation Results</span>
+              <span class="storage-row__meta">models/als_output/</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="cloud-metrics" id="storageMetrics">
+          <div class="cloud-metric">
+            <span class="cloud-metric__label">Files Stored</span>
+            <span class="cloud-metric__value" id="metricFiles">—</span>
+          </div>
+          <div class="cloud-metric">
+            <span class="cloud-metric__label">Processed Data</span>
+            <span class="cloud-metric__value" id="metricSize">—</span>
+          </div>
+          <div class="cloud-metric">
+            <span class="cloud-metric__label">Region</span>
+            <span class="cloud-metric__value" id="metricRegion">—</span>
+          </div>
+        </div>
+
+        <p class="cloud-card__note">
+          <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
+          Metrics are fetched from <code>/api/cloud/status</code> when available, otherwise
+          sample values are shown for preview.
+        </p>
+      </div>
+    </article>
+
+    <!-- Application card -->
+    <article class="cloud-card" id="appCard">
+      <div class="cloud-card__head">
+        <div class="cloud-card__icon cloud-card__icon--app">
+          <i class="fa-solid fa-bolt" aria-hidden="true"></i>
+        </div>
+        <div class="cloud-card__head-text">
+          <h2 class="cloud-card__title">Application</h2>
+          <p class="cloud-card__sub">Deployment status</p>
+        </div>
+        <span class="status-pill" id="appStatus" data-state="checking">
+          <span class="status-pill__dot"></span>
+          <span class="status-pill__label">Checking…</span>
+        </span>
+      </div>
+
+      <div class="cloud-card__body">
+        <div class="spec-list">
+          <div class="spec-row">
+            <span class="spec-row__key"><i class="fa-brands fa-python" aria-hidden="true"></i> Backend</span>
+            <span class="spec-row__value">Flask</span>
+          </div>
+          <div class="spec-row">
+            <span class="spec-row__key"><i class="fa-solid fa-microchip" aria-hidden="true"></i> Processing</span>
+            <span class="spec-row__value">PySpark</span>
+          </div>
+          <div class="spec-row">
+            <span class="spec-row__key"><i class="fa-solid fa-database" aria-hidden="true"></i> Storage</span>
+            <span class="spec-row__value">Amazon S3</span>
+          </div>
+          <div class="spec-row">
+            <span class="spec-row__key"><i class="fa-solid fa-code-branch" aria-hidden="true"></i> Environment</span>
+            <span class="spec-row__value" id="appEnv">Local dev</span>
+          </div>
+        </div>
+
+        <a class="btn btn--primary btn--block cloud-card__cta" id="openAppBtn" href="/" target="_self">
+          <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>
+          Open Application
+        </a>
+      </div>
+    </article>
+
+  </div>
+
+  <!-- ============= ARCHITECTURE DIAGRAM ============= -->
+  <section class="section">
+    <div class="section__head">
+      <div>
+        <h2 class="section__title">Cloud Architecture</h2>
+        <p class="section__subtitle">How requests flow through the deployed stack.</p>
+      </div>
+    </div>
+
+    <div class="arch-flow" id="cloudArch">
+      <div class="arch-flow__node">
+        <div class="arch-flow__icon"><i class="fa-solid fa-user" aria-hidden="true"></i></div>
+        <div class="arch-flow__label">User</div>
+        <div class="arch-flow__hint">Browser · any device</div>
+      </div>
+
+      <div class="arch-flow__connector" aria-hidden="true"><i class="fa-solid fa-arrow-down"></i></div>
+
+      <div class="arch-flow__node">
+        <div class="arch-flow__icon"><i class="fa-solid fa-globe" aria-hidden="true"></i></div>
+        <div class="arch-flow__label">Cloud-Hosted Web Application</div>
+        <div class="arch-flow__hint">HTML · CSS · JavaScript</div>
+      </div>
+
+      <div class="arch-flow__connector" aria-hidden="true"><i class="fa-solid fa-arrow-down"></i></div>
+
+      <div class="arch-flow__node">
+        <div class="arch-flow__icon arch-flow__icon--accent">
+          <i class="fa-brands fa-python" aria-hidden="true"></i>
+        </div>
+        <div class="arch-flow__label">Flask Backend</div>
+        <div class="arch-flow__hint">REST API · Jinja templates</div>
+      </div>
+
+      <div class="arch-flow__connector" aria-hidden="true"><i class="fa-solid fa-arrow-down"></i></div>
+
+      <div class="arch-flow__node">
+        <div class="arch-flow__icon arch-flow__icon--info">
+          <i class="fa-solid fa-microchip" aria-hidden="true"></i>
+        </div>
+        <div class="arch-flow__label">PySpark / Recommendation Engine</div>
+        <div class="arch-flow__hint">ALS · TF-IDF · aggregations</div>
+      </div>
+
+      <div class="arch-flow__connector" aria-hidden="true"><i class="fa-solid fa-arrow-down"></i></div>
+
+      <div class="arch-flow__node arch-flow__node--storage">
+        <div class="arch-flow__icon arch-flow__icon--aws">
+          <i class="fa-brands fa-aws" aria-hidden="true"></i>
+        </div>
+        <div class="arch-flow__label">Amazon S3 Cloud Storage</div>
+        <div class="arch-flow__hint">datasets · processed output · model artifacts</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============= WHY CLOUD ============= -->
+  <section class="section">
+    <div class="section__head">
+      <div>
+        <h2 class="section__title">Why Cloud?</h2>
+        <p class="section__subtitle">The reasons cloud infrastructure fits this project's scope.</p>
+      </div>
+    </div>
+
+    <div class="feature-grid">
+      <article class="feature-card">
+        <div class="feature-card__icon"><i class="fa-solid fa-expand" aria-hidden="true"></i></div>
+        <h3 class="feature-card__title">Scalable Storage</h3>
+        <p class="feature-card__text">
+          Cloud storage allows datasets and processed results to be stored remotely
+          without being tied to a single machine's disk capacity.
+        </p>
+      </article>
+
+      <article class="feature-card">
+        <div class="feature-card__icon"><i class="fa-solid fa-tower-broadcast" aria-hidden="true"></i></div>
+        <h3 class="feature-card__title">Remote Accessibility</h3>
+        <p class="feature-card__text">
+          The application can be accessed from different devices through deployment,
+          rather than only being reachable on the developer's local machine.
+        </p>
+      </article>
+
+      <article class="feature-card">
+        <div class="feature-card__icon"><i class="fa-solid fa-shield-halved" aria-hidden="true"></i></div>
+        <h3 class="feature-card__title">Data Availability</h3>
+        <p class="feature-card__text">
+          Processed data and application resources can be made available through cloud
+          infrastructure, reducing the risk of data loss on a single system.
+        </p>
+      </article>
+    </div>
+
+    <p class="cloud-disclaimer">
+      <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
+      In this project, PySpark processing runs on the developer environment while S3 stores
+      datasets and outputs. Cloud <em>processing</em> (e.g. EMR) is out of scope — the cloud
+      component here is storage and deployment.
+    </p>
+  </section>
+
+</section>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/cloud.js') }}"></script>
+{% endblock %}

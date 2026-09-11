@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+{% block title %}MovieSphere — Discover Your Next Favorite Movie{% endblock %}
+
+{% block content %}
+
+<!-- ============ HERO ============ -->
+<section class="hero">
+  <div class="hero__glow hero__glow--1" aria-hidden="true"></div>
+  <div class="hero__glow hero__glow--2" aria-hidden="true"></div>
+  <div class="hero__grid" aria-hidden="true"></div>
+
+  <div class="container hero__inner">
+    <span class="hero__eyebrow">
+      <i class="fa-solid fa-bolt"></i>
+      Powered by PySpark &amp; Collaborative Filtering
+    </span>
+
+    <h1 class="hero__title">
+      Discover Your Next<br>
+      <span class="text-accent">Favorite Movie</span>
+    </h1>
+
+    <p class="hero__subtitle">
+      Explore millions of movie ratings, uncover hidden patterns, and discover
+      personalized recommendations powered by Big Data.
+    </p>
+
+    <div class="hero__actions">
+      <a href="/explore" class="btn btn--primary btn--lg">
+        <i class="fa-solid fa-compass"></i> Explore Movies
+      </a>
+      <a href="/recommendations" class="btn btn--ghost btn--lg">
+        <i class="fa-solid fa-wand-magic-sparkles"></i> Get Recommendations
+      </a>
+    </div>
+
+    <div class="hero__stats" id="heroStats" data-source="api">
+      <!-- Populated by app.js from /api/analytics (mock fallback) -->
+    </div>
+  </div>
+</section>
+
+<!-- ============ TRENDING MOVIES ============ -->
+<section class="section container">
+  <div class="section__head">
+    <div>
+      <h2 class="section__title">Trending Movies</h2>
+      <p class="section__subtitle">Most rated titles across the dataset right now.</p>
+    </div>
+    <a href="/explore" class="link-more">
+      View all <i class="fa-solid fa-arrow-right"></i>
+    </a>
+  </div>
+
+  <div class="movie-grid" id="trendingGrid" aria-live="polite">
+    <!-- Skeleton placeholders — replaced by app.js -->
+    <div class="skeleton skeleton--card"></div>
+    <div class="skeleton skeleton--card"></div>
+    <div class="skeleton skeleton--card"></div>
+    <div class="skeleton skeleton--card"></div>
+    <div class="skeleton skeleton--card"></div>
+    <div class="skeleton skeleton--card"></div>
+  </div>
+</section>
+
+<!-- ============ DATA AT A GLANCE ============ -->
+<section class="section container">
+  <div class="section__head">
+    <div>
+      <h2 class="section__title">Data at a Glance</h2>
+      <p class="section__subtitle">Scale of the MovieLens dataset processed by the pipeline.</p>
+    </div>
+  </div>
+
+  <div class="kpi-grid" id="kpiGrid">
+    <div class="skeleton skeleton--kpi"></div>
+    <div class="skeleton skeleton--kpi"></div>
+    <div class="skeleton skeleton--kpi"></div>
+    <div class="skeleton skeleton--kpi"></div>
+  </div>
+</section>
+
+<!-- ============ POPULAR GENRES ============ -->
+<section class="section container">
+  <div class="section__head">
+    <div>
+      <h2 class="section__title">Popular Genres</h2>
+      <p class="section__subtitle">Genres by number of titles in the catalogue.</p>
+    </div>
+    <a href="/analytics" class="link-more">
+      Full analytics <i class="fa-solid fa-arrow-right"></i>
+    </a>
+  </div>
+
+  <div class="genre-grid" id="genreGrid">
+    <div class="skeleton skeleton--genre"></div>
+    <div class="skeleton skeleton--genre"></div>
+    <div class="skeleton skeleton--genre"></div>
+    <div class="skeleton skeleton--genre"></div>
+    <div class="skeleton skeleton--genre"></div>
+    <div class="skeleton skeleton--genre"></div>
+  </div>
+</section>
+
+<!-- ============ WHY MOVIESPHERE ============ -->
+<section class="section container">
+  <div class="section__head">
+    <div>
+      <h2 class="section__title">Why MovieSphere?</h2>
+      <p class="section__subtitle">A complete Big Data pipeline — from raw ratings to ranked recommendations.</p>
+    </div>
+  </div>
+
+  <div class="feature-grid">
+    <article class="feature-card">
+      <div class="feature-card__icon"><i class="fa-solid fa-database"></i></div>
+      <h3 class="feature-card__title">Big Data Analytics</h3>
+      <p class="feature-card__text">
+        Analyze millions of user–movie interactions using PySpark and distributed aggregation.
+      </p>
+    </article>
+
+    <article class="feature-card">
+      <div class="feature-card__icon"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+      <h3 class="feature-card__title">Personalized Recommendations</h3>
+      <p class="feature-card__text">
+        Use collaborative filtering to discover movies tailored to user preferences.
+      </p>
+    </article>
+
+    <article class="feature-card">
+      <div class="feature-card__icon"><i class="fa-solid fa-cloud"></i></div>
+      <h3 class="feature-card__title">Cloud Enabled</h3>
+      <p class="feature-card__text">
+        Store datasets and processed results using cloud storage and access the application remotely.
+      </p>
+    </article>
+  </div>
+</section>
+
+<!-- ============ CTA STRIP ============ -->
+<section class="section container">
+  <div class="cta-strip">
+    <div class="cta-strip__content">
+      <h2 class="cta-strip__title">Not sure what to watch?</h2>
+      <p class="cta-strip__text">
+        Pick a movie you already love and let the ALS engine find your next one.
+      </p>
+    </div>
+    <a href="/recommendations" class="btn btn--primary btn--lg">
+      <i class="fa-solid fa-wand-magic-sparkles"></i> Get Recommendations
+    </a>
+  </div>
+</section>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    MovieSphere.initHome();
+  });
+</script>
+{% endblock %}

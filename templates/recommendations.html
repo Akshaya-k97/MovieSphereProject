@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+{% block title %}Recommendations — MovieSphere{% endblock %}
+{% block page_id %}recommendations{% endblock %}
+
+{% block content %}
+
+<section class="page-head container">
+  <span class="page-head__eyebrow">
+    <i class="fa-solid fa-wand-magic-sparkles" aria-hidden="true"></i>
+    Hybrid Engine · ALS + TF-IDF
+  </span>
+  <h1 class="page-head__title">Find Your Next Favorite</h1>
+  <p class="page-head__subtitle">
+    Select a movie and let our recommendation engine find movies you may enjoy.
+  </p>
+</section>
+
+<section class="container rec">
+
+  <!-- ===== SELECT INTERFACE ===== -->
+  <div class="rec-select">
+    <div class="search-bar" style="position:relative">
+      <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+      <input type="search" id="recSearchInput" class="search-bar__input"
+             placeholder="Search for a movie…" aria-label="Search for a movie" autocomplete="off">
+      <div class="rec-dropdown" id="recDropdown" hidden role="listbox"></div>
+    </div>
+
+    <button class="btn btn--primary" id="recGoBtn" type="button" disabled>
+      <i class="fa-solid fa-wand-magic-sparkles" aria-hidden="true"></i>
+      Get Recommendations
+    </button>
+  </div>
+
+  <!-- ===== BECAUSE YOU LIKED ===== -->
+  <div class="because-section" id="becauseSection" hidden>
+    <h2 class="because-section__title">Because you liked</h2>
+    <div class="because-card" id="becauseCard"></div>
+  </div>
+
+  <!-- ===== LOADING ===== -->
+  <div class="rec-loading" id="recLoading" hidden>
+    <div class="rec-loading__spinner" aria-hidden="true"></div>
+    <p class="rec-loading__text">Analyzing movie data…</p>
+    <p class="rec-loading__sub">Running collaborative filtering on user–movie interactions.</p>
+  </div>
+
+  <!-- ===== RESULTS ===== -->
+  <div class="rec-results" id="recResults" hidden>
+    <div class="section__head">
+      <div>
+        <h2 class="section__title">Recommended For You</h2>
+        <p class="section__subtitle" id="recSubtitle">Ranked by hybrid score.</p>
+      </div>
+    </div>
+
+    <div class="movie-grid" id="recGrid"></div>
+  </div>
+
+  <!-- ===== EMPTY ===== -->
+  <div class="state" id="recEmpty">
+    <div class="state__icon"><i class="fa-solid fa-wand-magic-sparkles" aria-hidden="true"></i></div>
+    <p class="state__title">No recommendations available yet</p>
+    <p class="state__text">Select a movie above to generate personalized recommendations.</p>
+  </div>
+
+</section>
+
+<!-- ===== ARCHITECTURE EXPLAINER ===== -->
+<section class="container section">
+  <div class="section__head">
+    <div>
+      <h2 class="section__title">How Recommendations Are Built</h2>
+      <p class="section__subtitle">A hybrid pipeline that combines collaborative filtering with content similarity.</p>
+    </div>
+  </div>
+
+  <div class="rec-arch">
+    <div class="rec-arch__step">
+      <div class="rec-arch__node"><i class="fa-solid fa-film" aria-hidden="true"></i></div>
+      <p class="rec-arch__label">Your Selected Movie</p>
+    </div>
+    <div class="rec-arch__arrow" aria-hidden="true"><i class="fa-solid fa-arrow-down"></i></div>
+
+    <div class="rec-arch__step">
+      <div class="rec-arch__node"><i class="fa-solid fa-user-check" aria-hidden="true"></i></div>
+      <p class="rec-arch__label">User Preference Analysis</p>
+    </div>
+    <div class="rec-arch__arrow" aria-hidden="true"><i class="fa-solid fa-arrow-down"></i></div>
+
+    <div class="rec-arch__split">
+      <div class="rec-arch__step">
+        <div class="rec-arch__node rec-arch__node--accent">
+          <i class="fa-solid fa-diagram-project" aria-hidden="true"></i>
+        </div>
+        <p class="rec-arch__label">Collaborative Filtering</p>
+        <p class="rec-arch__weight" data-weight="cf">70%</p>
+      </div>
+      <div class="rec-arch__step">
+        <div class="rec-arch__node rec-arch__node--info">
+          <i class="fa-solid fa-file-lines" aria-hidden="true"></i>
+        </div>
+        <p class="rec-arch__label">Content Similarity (TF-IDF)</p>
+        <p class="rec-arch__weight" data-weight="cb">30%</p>
+      </div>
+    </div>
+    <div class="rec-arch__arrow" aria-hidden="true"><i class="fa-solid fa-arrow-down"></i></div>
+
+    <div class="rec-arch__step">
+      <div class="rec-arch__node"><i class="fa-solid fa-layer-group" aria-hidden="true"></i></div>
+      <p class="rec-arch__label">Hybrid Ranking</p>
+    </div>
+    <div class="rec-arch__arrow" aria-hidden="true"><i class="fa-solid fa-arrow-down"></i></div>
+
+    <div class="rec-arch__step">
+      <div class="rec-arch__node"><i class="fa-solid fa-trophy" aria-hidden="true"></i></div>
+      <p class="rec-arch__label">Top 10 Recommendations</p>
+    </div>
+  </div>
+
+  <p class="rec-arch__note">
+    Weight values are configurable and can be tuned in the backend
+    (<code>CF_WEIGHT</code> / <code>CB_WEIGHT</code> in <code>als_model.py</code>).
+  </p>
+
+</section>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/recommendations.js') }}"></script>
+{% endblock %}

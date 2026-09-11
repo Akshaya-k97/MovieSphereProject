@@ -1,0 +1,307 @@
+{% extends "base.html" %}
+{% block title %}About — MovieSphere{% endblock %}
+{% block page_id %}about{% endblock %}
+
+{% block content %}
+
+<section class="page-head container">
+  <span class="page-head__eyebrow">
+    <i class="fa-solid fa-circle-nodes" aria-hidden="true"></i>
+    System Overview
+  </span>
+  <h1 class="page-head__title">How MovieSphere Works</h1>
+  <p class="page-head__subtitle">
+    From raw MovieLens ratings to personalized recommendations served through a
+    Flask web application.
+  </p>
+</section>
+
+<!-- ============= PIPELINE DIAGRAM ============= -->
+<section class="container section" style="padding-top:0">
+  <div class="pipeline">
+
+    <!-- Stage 1 -->
+    <div class="pipeline__node">
+      <div class="pipeline__icon"><i class="fa-solid fa-database" aria-hidden="true"></i></div>
+      <div class="pipeline__text">
+        <div class="pipeline__title">MovieLens Dataset</div>
+        <div class="pipeline__hint">ratings · movies · tags</div>
+      </div>
+    </div>
+
+    <div class="pipeline__connector"><i class="fa-solid fa-arrow-down" aria-hidden="true"></i></div>
+
+    <!-- Stage 2 -->
+    <div class="pipeline__node">
+      <div class="pipeline__icon"><i class="fa-brands fa-aws" aria-hidden="true"></i></div>
+      <div class="pipeline__text">
+        <div class="pipeline__title">Cloud Storage / Local Dataset</div>
+        <div class="pipeline__hint">Amazon S3 bucket or local FS</div>
+      </div>
+    </div>
+
+    <div class="pipeline__connector"><i class="fa-solid fa-arrow-down" aria-hidden="true"></i></div>
+
+    <!-- Stage 3 -->
+    <div class="pipeline__node">
+      <div class="pipeline__icon"><i class="fa-solid fa-filter" aria-hidden="true"></i></div>
+      <div class="pipeline__text">
+        <div class="pipeline__title">Data Preprocessing</div>
+        <div class="pipeline__hint">cleaning · deduplication · joins</div>
+      </div>
+    </div>
+
+    <div class="pipeline__connector"><i class="fa-solid fa-arrow-down" aria-hidden="true"></i></div>
+
+    <!-- Stage 4 -->
+    <div class="pipeline__node pipeline__node--accent">
+      <div class="pipeline__icon"><i class="fa-solid fa-microchip" aria-hidden="true"></i></div>
+      <div class="pipeline__text">
+        <div class="pipeline__title">PySpark Processing</div>
+        <div class="pipeline__hint">distributed aggregation · feature building</div>
+      </div>
+    </div>
+
+    <!-- SPLIT -->
+    <div class="pipeline__split-wrap">
+      <div class="pipeline__connector"><i class="fa-solid fa-arrow-down" aria-hidden="true"></i></div>
+
+      <div class="pipeline__split">
+        <div class="pipeline__branch">
+          <div class="pipeline__node pipeline__node--sm">
+            <div class="pipeline__icon"><i class="fa-solid fa-chart-column" aria-hidden="true"></i></div>
+            <div class="pipeline__text">
+              <div class="pipeline__title">Analytics</div>
+              <div class="pipeline__hint">aggregations</div>
+            </div>
+          </div>
+          <div class="pipeline__connector pipeline__connector--sm"><i class="fa-solid fa-arrow-down" aria-hidden="true"></i></div>
+          <div class="pipeline__leaf">
+            <i class="fa-solid fa-chart-line" aria-hidden="true"></i>
+            <span>Charts</span>
+          </div>
+        </div>
+
+        <div class="pipeline__branch pipeline__branch--accent">
+          <div class="pipeline__node pipeline__node--sm">
+            <div class="pipeline__icon pipeline__icon--accent"><i class="fa-solid fa-diagram-project" aria-hidden="true"></i></div>
+            <div class="pipeline__text">
+              <div class="pipeline__title">ALS</div>
+              <div class="pipeline__hint">matrix factorization</div>
+            </div>
+          </div>
+          <div class="pipeline__connector pipeline__connector--sm"><i class="fa-solid fa-arrow-down" aria-hidden="true"></i></div>
+          <div class="pipeline__leaf">
+            <i class="fa-solid fa-users" aria-hidden="true"></i>
+            <span>Collaborative Filtering</span>
+          </div>
+        </div>
+
+        <div class="pipeline__branch pipeline__branch--info">
+          <div class="pipeline__node pipeline__node--sm">
+            <div class="pipeline__icon pipeline__icon--info"><i class="fa-solid fa-file-lines" aria-hidden="true"></i></div>
+            <div class="pipeline__text">
+              <div class="pipeline__title">TF-IDF</div>
+              <div class="pipeline__hint">text vectorization</div>
+            </div>
+          </div>
+          <div class="pipeline__connector pipeline__connector--sm"><i class="fa-solid fa-arrow-down" aria-hidden="true"></i></div>
+          <div class="pipeline__leaf">
+            <i class="fa-solid fa-layer-group" aria-hidden="true"></i>
+            <span>Content Similarity</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pipeline__merge">
+        <span class="pipeline__merge-line" aria-hidden="true"></span>
+        <span class="pipeline__merge-label">merge</span>
+        <span class="pipeline__merge-line" aria-hidden="true"></span>
+      </div>
+    </div>
+
+    <!-- Stage 5 -->
+    <div class="pipeline__node pipeline__node--accent">
+      <div class="pipeline__icon"><i class="fa-solid fa-code-merge" aria-hidden="true"></i></div>
+      <div class="pipeline__text">
+        <div class="pipeline__title">Hybrid Ranking</div>
+        <div class="pipeline__hint">CF 70% · CB 30% (configurable)</div>
+      </div>
+    </div>
+
+    <div class="pipeline__connector"><i class="fa-solid fa-arrow-down" aria-hidden="true"></i></div>
+
+    <!-- Stage 6 -->
+    <div class="pipeline__node">
+      <div class="pipeline__icon"><i class="fa-brands fa-python" aria-hidden="true"></i></div>
+      <div class="pipeline__text">
+        <div class="pipeline__title">Flask Backend</div>
+        <div class="pipeline__hint">API + template rendering</div>
+      </div>
+    </div>
+
+    <div class="pipeline__connector"><i class="fa-solid fa-arrow-down" aria-hidden="true"></i></div>
+
+    <!-- Stage 7 -->
+    <div class="pipeline__node">
+      <div class="pipeline__icon"><i class="fa-solid fa-globe" aria-hidden="true"></i></div>
+      <div class="pipeline__text">
+        <div class="pipeline__title">Web Application</div>
+        <div class="pipeline__hint">HTML · CSS · JavaScript · Chart.js</div>
+      </div>
+    </div>
+
+    <div class="pipeline__connector"><i class="fa-solid fa-arrow-down" aria-hidden="true"></i></div>
+
+    <!-- Stage 8 -->
+    <div class="pipeline__node pipeline__node--final">
+      <div class="pipeline__icon"><i class="fa-solid fa-user" aria-hidden="true"></i></div>
+      <div class="pipeline__text">
+        <div class="pipeline__title">User</div>
+        <div class="pipeline__hint">discovers movies · explores analytics</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============= TECH STACK ============= -->
+<section class="container section">
+  <div class="section__head">
+    <div>
+      <h2 class="section__title">Technology Stack</h2>
+      <p class="section__subtitle">Languages, frameworks and services used across the project.</p>
+    </div>
+  </div>
+
+  <div class="tech-grid">
+    <div class="tech-card">
+      <div class="tech-card__icon tech-card__icon--py"><i class="fa-brands fa-python" aria-hidden="true"></i></div>
+      <div class="tech-card__name">Python</div>
+      <div class="tech-card__role">Core language</div>
+    </div>
+
+    <div class="tech-card">
+      <div class="tech-card__icon tech-card__icon--spark"><i class="fa-solid fa-fire" aria-hidden="true"></i></div>
+      <div class="tech-card__name">PySpark</div>
+      <div class="tech-card__role">Distributed processing</div>
+    </div>
+
+    <div class="tech-card">
+      <div class="tech-card__icon tech-card__icon--pandas"><i class="fa-solid fa-table" aria-hidden="true"></i></div>
+      <div class="tech-card__name">Pandas</div>
+      <div class="tech-card__role">Local data wrangling</div>
+    </div>
+
+    <div class="tech-card">
+      <div class="tech-card__icon tech-card__icon--sk"><i class="fa-solid fa-flask" aria-hidden="true"></i></div>
+      <div class="tech-card__name">Scikit-learn</div>
+      <div class="tech-card__role">TF-IDF · utilities</div>
+    </div>
+
+    <div class="tech-card">
+      <div class="tech-card__icon tech-card__icon--flask"><i class="fa-solid fa-server" aria-hidden="true"></i></div>
+      <div class="tech-card__name">Flask</div>
+      <div class="tech-card__role">Backend web framework</div>
+    </div>
+
+    <div class="tech-card">
+      <div class="tech-card__icon tech-card__icon--js"><i class="fa-brands fa-js" aria-hidden="true"></i></div>
+      <div class="tech-card__name">JavaScript</div>
+      <div class="tech-card__role">Client-side interactivity</div>
+    </div>
+
+    <div class="tech-card">
+      <div class="tech-card__icon tech-card__icon--html"><i class="fa-brands fa-html5" aria-hidden="true"></i></div>
+      <div class="tech-card__name">HTML5</div>
+      <div class="tech-card__role">Semantic markup</div>
+    </div>
+
+    <div class="tech-card">
+      <div class="tech-card__icon tech-card__icon--css"><i class="fa-brands fa-css3-alt" aria-hidden="true"></i></div>
+      <div class="tech-card__name">CSS3</div>
+      <div class="tech-card__role">Responsive styling</div>
+    </div>
+
+    <div class="tech-card">
+      <div class="tech-card__icon tech-card__icon--aws"><i class="fa-brands fa-aws" aria-hidden="true"></i></div>
+      <div class="tech-card__name">AWS S3</div>
+      <div class="tech-card__role">Cloud storage</div>
+    </div>
+
+    <div class="tech-card">
+      <div class="tech-card__icon tech-card__icon--db"><i class="fa-solid fa-database" aria-hidden="true"></i></div>
+      <div class="tech-card__name">SQLite</div>
+      <div class="tech-card__role">Optional local store</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============= OBJECTIVES ============= -->
+<section class="container section">
+  <div class="section__head">
+    <div>
+      <h2 class="section__title">Project Objectives</h2>
+      <p class="section__subtitle">What this project sets out to demonstrate.</p>
+    </div>
+  </div>
+
+  <ol class="objectives">
+    <li class="objective">
+      <span class="objective__num">01</span>
+      <div class="objective__text">
+        <div class="objective__title">Process large-scale movie data efficiently</div>
+        <p class="objective__desc">
+          Use PySpark to load, clean and aggregate MovieLens ratings at scale rather than
+          loading everything into memory with Pandas alone.
+        </p>
+      </div>
+    </li>
+
+    <li class="objective">
+      <span class="objective__num">02</span>
+      <div class="objective__text">
+        <div class="objective__title">Analyze movie and user interaction patterns</div>
+        <p class="objective__desc">
+          Extract rating distributions, genre breakdowns, temporal trends and
+          popularity signals that would otherwise be invisible in raw CSV files.
+        </p>
+      </div>
+    </li>
+
+    <li class="objective">
+      <span class="objective__num">03</span>
+      <div class="objective__text">
+        <div class="objective__title">Generate personalized recommendations</div>
+        <p class="objective__desc">
+          Combine collaborative filtering (ALS) with optional content similarity (TF-IDF)
+          to produce ranked, explainable suggestions.
+        </p>
+      </div>
+    </li>
+
+    <li class="objective">
+      <span class="objective__num">04</span>
+      <div class="objective__text">
+        <div class="objective__title">Visualize meaningful insights</div>
+        <p class="objective__desc">
+          Present analytics through a clean, responsive interface so findings are
+          understandable to non-technical viewers.
+        </p>
+      </div>
+    </li>
+
+    <li class="objective">
+      <span class="objective__num">05</span>
+      <div class="objective__text">
+        <div class="objective__title">Demonstrate cloud-enabled storage and deployment</div>
+        <p class="objective__desc">
+          Show how datasets, processed output and model artifacts can be stored on
+          AWS S3 and served through a deployed Flask application.
+        </p>
+      </div>
+    </li>
+  </ol>
+</section>
+
+{% endblock %}
