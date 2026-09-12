@@ -60,6 +60,13 @@
   // Pseudo explanations derived from genre overlap + ratings
   function computeReasons(selected, candidate) {
     const reasons = [];
+
+    // When the backend supplies a match, the recommendation came from ALS.
+    // It's a relative rank within the returned batch — not a probability.
+    if (typeof candidate.match === 'number') {
+      reasons.push(`ALS collaborative filtering rank (relative score: ${candidate.match}%)`);
+    }
+
     const a = new Set(selected.genres || []);
     const b = new Set(candidate.genres || []);
     const shared = [...a].filter(g => b.has(g));

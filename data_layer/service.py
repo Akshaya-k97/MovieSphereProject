@@ -42,6 +42,35 @@ def _split_genres(raw) -> list[str]:
         return []
     return [g.strip() for g in raw.split("|") if g.strip()]
 
+# ----------------------------------------------------------------------
+# Relative match normalisation
+# ----------------------------------------------------------------------
+MATCH_LO = 60
+MATCH_HI = 95
+
+
+def _attach_relative_match(items: list[dict], lo: int = MATCH_LO, hi: int = MATCH_HI) -> list[dict]:
+    """
+    Attach a *relative* 'match' percentage to a batch of recommendations.
+
+    The match is derived by min-max normalising the raw ALS scores
+    WITHIN the returned batch, mapped to [lo, hi]. It reflects how the
+    top recommendation compares to the others in this batch — it is
+    NOT a probability, accuracy, or absolute confidence score.
+
+    If all scores are equal, every item receives the batch mid-point.
+    """
+    if not items:
+        return []
+    scores = [it["score"] for it in items]
+    smin, smax = min(scores), max(scores)
+    span = smax - smin
+    out = []
+    for it in items:
+        ratio = 0.5 if span <= 1e-9 else (it["score"] - smin) / span
+        match = round(lo + ratio * (hi - lo))
+        out.append({**it, "match": int(match)})
+    return out
 
 # ----------------------------------------------------------------------
 # Enriched movies view
@@ -206,19 +235,52 @@ def user_insights(user_id: int) -> dict | None:
         "ratingBehaviour": behaviour,
     }
 
+def user_recommendations(user_id: int, limit: int = 10) -> list[dict] | None:
+    """
+    Personalized recommendations for a user, sourced from ALS output.
+
+    Returns None when:
+      • the ALS gate is off (MOVIESPHERE_USE_ALS not set), or
+      • the user is not present in user_recommendations.json (cold start).
+
+    Callers translate None into HTTP 404 so the frontend can fall back.
+    """
+    if not artifacts.als_enabled():
+        return None
+
+    rec_items = artifacts.user_recommendations_for(user_id, limit=limit)
+    if not rec_items:
+        return None
+
+    df = movies_df()
+    present = set(df["movieId"].values)
+    score_by_id = {int(it["movieId"]): it["score"] for it in rec_items}
+    ordered_ids = [mid for mid in score_by_id if mid in present]
+    if not ordered_ids:
+        return None
+
+    ordered_df = df.set_index("movieId").loc[ordered_ids].reset_index()
+    movies = [_row_to_movie(row) for _, row in ordered_df.iterrows()]
+    for m in movies:
+        m["score"] = score_by_id[m["id"]]
+
+    movies = _attach_relative_match(movies)
+    for m in movies:
+        m.pop("score", None)
+    return movies
 
 # ----------------------------------------------------------------------
 # Recommendations — NON-ML STUB (keeps UI coherent with real data)
 # ----------------------------------------------------------------------
 def recommendations(movie_id: int, limit: int = 10) -> list[dict] | None:
     """
-    Tier 1: precomputed ALS artifacts — ONLY if MOVIESPHERE_USE_ALS is set.
-            This gate exists so that generating ALS output (6B.1) does not
-            automatically alter the API behavior. The switch happens in 6B.2
-            after the ALS pipeline has been verified.
-    Tier 2: Phase 6A genre-similarity stub — default behavior.
+    Tier 1: precomputed ALS item-item artifacts (opt-in via MOVIESPHERE_USE_ALS).
+            Response includes a relative 'match' field derived from ALS scores.
+    Tier 2: Phase 6A genre-similarity stub — no 'match' field, so the
+            frontend's heuristic is used. Byte-identical to the Phase 6A
+            contract.
 
-    Returns the same JSON shape either way.
+    Returns the same movie-object shape either way.
     """
     df = movies_df()
     match = df[df["movieId"] == movie_id]
@@ -229,14 +291,23 @@ def recommendations(movie_id: int, limit: int = 10) -> list[dict] | None:
     if artifacts.als_enabled():
         rec_items = artifacts.recommendations_for(movie_id, limit=limit)
         if rec_items:
-            movie_ids = [int(it["movieId"]) for it in rec_items]
             present = set(df["movieId"].values)
-            ordered_ids = [m for m in movie_ids if m in present]
+            score_by_id = {int(it["movieId"]): it["score"] for it in rec_items}
+            ordered_ids = [mid for mid in score_by_id if mid in present]
+
             if ordered_ids:
                 ordered_df = df.set_index("movieId").loc[ordered_ids].reset_index()
-                return [_row_to_movie(row) for _, row in ordered_df.iterrows()]
+                movies = [_row_to_movie(row) for _, row in ordered_df.iterrows()]
+                for m in movies:
+                    m["score"] = score_by_id[m["id"]]
 
-    # --- Tier 2: Phase 6A genre-similarity stub (default) ---
+                movies = _attach_relative_match(movies)
+                # Strip the raw ALS score — kept internal, not exposed.
+                for m in movies:
+                    m.pop("score", None)
+                return movies
+
+    # --- Tier 2: Phase 6A genre-similarity stub ---
     input_genres = set(match.iloc[0]["genres_list"])
 
     if input_genres:

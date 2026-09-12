@@ -119,15 +119,22 @@ def api_recommendations(movie_id):
 
 @app.route("/api/artifacts/status")
 def api_artifacts_status():
+    meta = data_artifacts.als_meta() or {}
     return jsonify({
         "analytics": {
             "available": data_artifacts.has_analytics(),
             "source": "precomputed" if data_artifacts.has_analytics() else "live_pandas",
         },
         "recommendations": {
-            "available": data_artifacts.has_recommendations(),
-            "engine": (data_artifacts.als_meta() or {}).get("engine"),
-            "als_enabled": data_artifacts.als_enabled(),          # ← NEW
+            "movie_to_movie": {
+                "available": data_artifacts.has_recommendations(),
+                "engine": meta.get("engine"),
+            },
+            "user_to_movie": {
+                "available": data_artifacts.has_user_recommendations(),
+                "userCount": meta.get("userCount", 0),
+            },
+            "als_enabled": data_artifacts.als_enabled(),
             "active_source": (
                 "als_artifacts"
                 if (data_artifacts.has_recommendations() and data_artifacts.als_enabled())
@@ -136,6 +143,27 @@ def api_artifacts_status():
         },
     })
 
+@app.route("/api/user/<int:user_id>/recommendations")
+def api_user_recommendations(user_id):
+    """
+    Personalized ALS recommendations for a specific user.
+
+    200 → array of movie objects (with relative 'match' field)
+    404 → ALS disabled, user not in model, or dataset missing
+    """
+    if not data_loader.data_available():
+        return _dataset_unavailable()
+
+    limit = request.args.get("limit", 10, type=int)
+    limit = max(1, min(limit, 50))
+
+    recs = data_service.user_recommendations(user_id, limit=limit)
+    if recs is None:
+        return jsonify({
+            "error": "unavailable",
+            "reason": "als_disabled_or_user_not_in_model",
+        }), 404
+    return jsonify(recs)
 
 if __name__ == "__main__":
     app.run(debug=True, host="127.0.0.1", port=5000)

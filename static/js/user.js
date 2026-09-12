@@ -333,15 +333,28 @@
     return score;
   }
 
-  function renderRecommendations(profile) {
+async function renderRecommendations(profile) {
     if (!els.recGrid) return;
 
-    const all = MockData.movies || [];
-    const ranked = [...all]
-      .map(m => ({ m, s: scoreForUser(m, profile) }))
-      .sort((a, b) => b.s - a.s)
-      .slice(0, 6)
-      .map(x => x.m);
+    // Tier 1: real ALS recommendations from the backend.
+    let ranked = null;
+    try {
+      const res = await fetch(`/api/user/${profile.userId}/recommendations?limit=6`);
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data) && data.length) ranked = data;
+      }
+    } catch { /* fall through to heuristic */ }
+
+    // Tier 2: heuristic on the embedded mock list.
+    if (!ranked) {
+      const all = MockData.movies || [];
+      ranked = [...all]
+        .map(m => ({ m, s: scoreForUser(m, profile) }))
+        .sort((a, b) => b.s - a.s)
+        .slice(0, 6)
+        .map(x => x.m);
+    }
 
     if (!ranked.length) {
       els.recGrid.innerHTML = `
@@ -356,11 +369,14 @@
     MovieCard.renderGrid(els.recGrid, ranked);
 
     if (els.recSub) {
+      const src = (ranked[0] && typeof ranked[0].match === 'number')
+        ? 'ALS collaborative filtering'
+        : 'genre-based heuristic';
       els.recSub.textContent =
         `Top 6 picks for ${profile.displayName} · favourite genre: ${profile.favoriteGenre} · ` +
-        `based on ${profile.moviesRated} rated movies (avg ${profile.avgRating.toFixed(2)}★)`;
+        `based on ${profile.moviesRated} rated movies (avg ${profile.avgRating.toFixed(2)}★) · source: ${src}`;
     }
-  }
+}
 
   /* ---------------------------------------------------------
      8) ORCHESTRATION
@@ -389,7 +405,7 @@
       renderStats(profile);
       renderFavoriteGenres(profile);
       renderRatingBehaviour(profile);
-      renderRecommendations(profile);
+      await renderRecommendations(profile);
 
       // Persist in URL so refresh keeps the chosen user
       const url = new URL(location.href);

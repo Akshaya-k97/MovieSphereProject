@@ -6,7 +6,7 @@ Absence of any artifact is fine — callers fall back to live Pandas.
 """
 
 import json
-import os as _os
+import os 
 from functools import lru_cache
 
 
@@ -23,7 +23,7 @@ def als_enabled() -> bool:
     Set env var MOVIESPHERE_USE_ALS=1 (or 'true'/'yes') to activate.
     Default: disabled — genre stub stays in effect.
     """
-    return _os.environ.get("MOVIESPHERE_USE_ALS", "").strip().lower() in ("1", "true", "yes", "on")
+    return os.environ.get("MOVIESPHERE_USE_ALS", "").strip().lower() in ("1", "true", "yes", "on")
 
 
 _BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -89,9 +89,35 @@ def recommendations_for(movie_id: int, limit: int = 10) -> list[dict] | None:
         return None
     return entries[:limit]
 
+# ----------------------------------------------------------------------
+# Per-user recommendations (ALS output)
+# ----------------------------------------------------------------------
+@lru_cache(maxsize=1)
+def user_recommendations_map() -> dict | None:
+    return _read_json(os.path.join(MODELS_DIR, "user_recommendations.json"))
+
+
+def has_user_recommendations() -> bool:
+    return user_recommendations_map() is not None
+
+
+def user_recommendations_for(user_id: int, limit: int = 10) -> list[dict] | None:
+    """
+    Return [{movieId, score}, ...] for a user, or None if the user is not
+    in the model. Empty list means "user exists in model but no recs".
+    """
+    recs = user_recommendations_map()
+    if not recs:
+        return None
+    entries = recs.get(str(int(user_id)))
+    if entries is None:
+        return None
+    return entries[:limit]
+
 
 def clear_cache() -> None:
     analytics.cache_clear()
     analytics_extended.cache_clear()
     recommendations_map.cache_clear()
+    user_recommendations_map.cache_clear()
     als_meta.cache_clear()
