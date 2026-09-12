@@ -8,3 +8,6 @@ __pycache__/
 # Virtual environments (if you use them)
 venv/
 .venv/
+
+#dataset
+data/

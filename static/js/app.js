@@ -434,7 +434,7 @@ const Home = {
   async init() {
     this.renderHeroStats();
     await this.renderTrending();
-    this.renderKPIs();
+    await this.renderKPIs();
     this.renderGenres();
     this.bindFavorites();
   },
@@ -486,11 +486,17 @@ const Home = {
     }
   },
 
-  renderKPIs() {
+  async renderKPIs() {
     const grid = document.getElementById('kpiGrid');
     if (!grid) return;
 
-    const kpis = MockData.kpis;
+    let kpis = MockData.kpis;
+    try {
+      const data = await API.getAnalytics();
+      if (data && Array.isArray(data.kpis) && data.kpis.length) {
+        kpis = data.kpis;
+      }
+    } catch { /* fall back to mock */ }
 
     grid.innerHTML = kpis.map((k, i) => `
       <article class="kpi-card" style="animation-delay:${i * 60}ms">
