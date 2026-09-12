@@ -7,6 +7,7 @@ from flask import Flask, render_template, jsonify, request
 
 from data_layer import loader as data_loader
 from data_layer import service as data_service
+from data_layer import artifacts as data_artifacts
 
 app = Flask(__name__)
 
@@ -115,6 +116,25 @@ def api_recommendations(movie_id):
     if recs is None:
         return jsonify({"error": "not_found"}), 404
     return jsonify(recs)
+
+@app.route("/api/artifacts/status")
+def api_artifacts_status():
+    return jsonify({
+        "analytics": {
+            "available": data_artifacts.has_analytics(),
+            "source": "precomputed" if data_artifacts.has_analytics() else "live_pandas",
+        },
+        "recommendations": {
+            "available": data_artifacts.has_recommendations(),
+            "engine": (data_artifacts.als_meta() or {}).get("engine"),
+            "als_enabled": data_artifacts.als_enabled(),          # ← NEW
+            "active_source": (
+                "als_artifacts"
+                if (data_artifacts.has_recommendations() and data_artifacts.als_enabled())
+                else "genre_stub"
+            ),
+        },
+    })
 
 
 if __name__ == "__main__":

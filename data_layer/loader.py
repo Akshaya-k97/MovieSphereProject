@@ -58,3 +58,8 @@ def clear_cache() -> None:
     movies.cache_clear()
     ratings.cache_clear()
     tags.cache_clear()
+
+def processed_dir() -> str:
+    import os
+    base = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    return os.path.join(base, "data", "processed")

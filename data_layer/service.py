@@ -18,6 +18,7 @@ import numpy as np
 import pandas as pd
 
 from . import loader
+from . import artifacts
 
 
 # ----------------------------------------------------------------------
@@ -126,7 +127,15 @@ def search_movies(query: str, limit: int = 20) -> list[dict]:
 # Analytics
 # ----------------------------------------------------------------------
 def analytics_kpis() -> dict:
-    """Return {kpis: [...]} matching the frontend's expected shape."""
+    """
+    Prefer precomputed artifacts from spark_jobs.spark_analytics.
+    Fall back to live Pandas aggregation (Phase 6A behavior).
+    """
+    pre = artifacts.analytics()
+    if pre and isinstance(pre.get("kpis"), list) and pre["kpis"]:
+        return pre
+
+    # --- Phase 6A fallback ---
     m = movies_df()
     r = loader.ratings()
 
@@ -134,7 +143,6 @@ def analytics_kpis() -> dict:
     total_movies = int(len(m))
     total_users = int(r["userId"].nunique())
 
-    # Count unique genres across all movies (safely handles empty genre lists)
     exploded = m["genres_list"].explode().dropna()
     total_genres = int(exploded.nunique()) if len(exploded) else 0
 
@@ -204,16 +212,31 @@ def user_insights(user_id: int) -> dict | None:
 # ----------------------------------------------------------------------
 def recommendations(movie_id: int, limit: int = 10) -> list[dict] | None:
     """
-    Returns popular movies sharing at least one genre with the input movie.
-    NOT collaborative filtering — this is a Phase 6A placeholder so that
-    the Recommendations page displays real MovieLens titles instead of
-    the embedded mock list. Phase 6B will replace this with ALS output.
+    Tier 1: precomputed ALS artifacts — ONLY if MOVIESPHERE_USE_ALS is set.
+            This gate exists so that generating ALS output (6B.1) does not
+            automatically alter the API behavior. The switch happens in 6B.2
+            after the ALS pipeline has been verified.
+    Tier 2: Phase 6A genre-similarity stub — default behavior.
+
+    Returns the same JSON shape either way.
     """
     df = movies_df()
     match = df[df["movieId"] == movie_id]
     if match.empty:
         return None
 
+    # --- Tier 1: ALS artifacts (opt-in) ---
+    if artifacts.als_enabled():
+        rec_items = artifacts.recommendations_for(movie_id, limit=limit)
+        if rec_items:
+            movie_ids = [int(it["movieId"]) for it in rec_items]
+            present = set(df["movieId"].values)
+            ordered_ids = [m for m in movie_ids if m in present]
+            if ordered_ids:
+                ordered_df = df.set_index("movieId").loc[ordered_ids].reset_index()
+                return [_row_to_movie(row) for _, row in ordered_df.iterrows()]
+
+    # --- Tier 2: Phase 6A genre-similarity stub (default) ---
     input_genres = set(match.iloc[0]["genres_list"])
 
     if input_genres:
